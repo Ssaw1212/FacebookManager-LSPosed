@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Facebook Manager - LSPosed</string>
+    <string name="app_description">Modern LSPosed module for Facebook</string>
+    <string name="title">Facebook Manager</string>
+    <string name="subtitle">Modern libxposed API 102</string>
+    <string name="block_ads">حجب الإعلانات</string>
+    <string name="download_video">تنزيل الفيديو المسموح به</string>
+    <string name="status">نواة حديثة بدون XposedBridge القديم.</string>
+</resources>

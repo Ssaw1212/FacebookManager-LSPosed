@@ -1,11 +1,6 @@
 package com.ssaw1212.facebookmanager
 
-import android.app.Application
-import android.content.Context
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
@@ -18,54 +13,30 @@ class ModuleMain : XposedModule() {
     }
 
     override fun onModuleLoaded(param: ModuleLoadedParam) {
-        log(
-            Log.INFO,
-            TAG,
-            "Module loaded: ${param.getProcessName()}"
-        )
+        log(Log.INFO, TAG, "Facebook Manager loaded")
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onPackageLoaded(param: PackageLoadedParam) {
         if (param.getPackageName() != TARGET) return
 
-        log(
-            Log.INFO,
-            TAG,
-            "Facebook loaded: ${param.getPackageName()}"
-        )
+        log(Log.INFO, TAG, "Facebook detected")
 
         try {
-            val attach = Application::class.java.getDeclaredMethod(
-                "attach",
-                Context::class.java
+            val process = Runtime.getRuntime().exec(
+                arrayOf("su", "-c", "id")
             )
 
-            hook(attach)
-                .setId("facebook_application_attach")
-                .intercept(
-                    XposedInterface.Hooker { chain ->
-                        val result = chain.proceed()
+            val output = process.inputStream.bufferedReader().readText()
+            val exitCode = process.waitFor()
 
-                        log(
-                            Log.INFO,
-                            TAG,
-                            "Facebook Application.attach observed"
-                        )
+            if (exitCode == 0) {
+                log(Log.INFO, TAG, "ROOT granted: $output")
+            } else {
+                log(Log.WARN, TAG, "ROOT not granted")
+            }
 
-                        result
-                    }
-                )
-
-            log(Log.INFO, TAG, "Base hook installed")
-
-        } catch (t: Throwable) {
-            log(
-                Log.ERROR,
-                TAG,
-                "Hook installation failed",
-                t
-            )
+        } catch (e: Exception) {
+            log(Log.ERROR, TAG, "ROOT request failed", e)
         }
     }
 }

@@ -25,9 +25,7 @@ android {
 
     packaging {
         resources {
-            merges += "META-INF/xposed/java_init.list"
-            merges += "META-INF/xposed/module.prop"
-            merges += "META-INF/xposed/scope.list"
+            merges += "META-INF/xposed/*"
         }
     }
 }
